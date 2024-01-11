@@ -4,11 +4,11 @@ import { Schema, model } from 'mongoose';
 const usernameSchema = new Schema<Username>({
   firstName: {
     type: String,
-    required: true,
+    required: [true, 'first name needed'],
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, 'last name needed'],
   },
 });
 
@@ -17,7 +17,14 @@ const gaurdianSchema = new Schema<Gaurdian>({
     type: String,
     required: true,
   },
-  gender: ['male', 'female'],
+  gender: {
+    type: String,
+    enum: {
+      values: ['male', 'female'],
+      message: 'Gender field is invalid',
+    },
+    required: true,
+  },
   dateOfBirth: {
     type: String,
     required: true,
@@ -34,9 +41,19 @@ const gaurdianSchema = new Schema<Gaurdian>({
 
 const studentSchema = new Schema<Student>({
   id: { type: String },
-  name: usernameSchema,
-  gender: ['male', 'female'],
-  gaurdian: gaurdianSchema,
+  name: { type: usernameSchema, required: true },
+  gender: {
+    type: String,
+    enum: {
+      values: ['male', 'female'],
+      message: '{VALUE} is invalid',
+    },
+    required: true,
+  },
+  gaurdian: {
+    type: gaurdianSchema,
+    required: true,
+  },
 });
 
 export const StudentModel = model<Student>('Student', studentSchema);
